@@ -31,6 +31,8 @@ namespace Layouts
             if (Instance == null) Instance = this;
             else Destroy(this);
 
+            savedMap = JsonConvert.DeserializeObject<LayoutMap>(mapJson.ToString());
+
             //if (TryInstantiateLayout(LayoutType.MainLevelStyle0, out var main)) mainLevel = main;
 
             foreach (var layoutData in savedMap.Layouts.Where(x => x.enable))
