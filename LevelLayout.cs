@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using Interactables.Behaviours;
 using UnityEngine.AI;
 
 namespace Layouts
@@ -14,7 +13,7 @@ namespace Layouts
         [field: SerializeField] public List<Vector3> NextLayoutRotations { get; private set; }
 
         [SerializeField] private GameObject entranceDoor;
-        [SerializeField] private List<Behaviour_DoorNew> doors;
+        [SerializeField] private List<LayoutDoor> doors;
 
         [SerializeField] private Transform[] smallAnchors;
         [SerializeField] private Transform[] mediumAnchors;
@@ -80,7 +79,7 @@ namespace Layouts
                 if (nextLayoutShapes == null || nextLayoutShapes.Count == 0 || i >= nextLayoutShapes.Count ||
                     (nextLayoutShapes[i] == LayoutType.None))
                 {
-                    doors[i].SetDoorState(DoorState.Locked);
+                    doors[i].SetDoorState("locked");
                     continue;
                 }
 
@@ -99,7 +98,7 @@ namespace Layouts
                         manager.StartCoroutine(manager.DeactivateLevelLayouts());
                     }
 
-                    doors[i].SetDoorState(DoorState.Closed);
+                    doors[i].SetDoorState("closed");
                     doors[i].SetDoorAction(action);
                 }
             }

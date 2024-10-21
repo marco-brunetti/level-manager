@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Game.General;
 
 namespace Layouts
 {
@@ -22,7 +22,7 @@ namespace Layouts
         private HashSet<LevelLayout> layoutPool = new();
         private Queue<LevelLayout> deactivateQueue = new();
 
-        private GameControllerV2 gameController;
+        public static EventHandler<string> LayoutStyleChanged;
 
         public static LayoutManager Instance { get; private set; }
 
@@ -31,31 +31,43 @@ namespace Layouts
             if (Instance == null) Instance = this;
             else Destroy(this);
 
-            savedMap = JsonConvert.DeserializeObject<LayoutMap>(mapJson.ToString());
-
-            foreach (var prefab in layoutDataObject.LayoutPrefabs.Where(x => x != null && !prefabs.ContainsKey(x.Type)))
-            {
-                prefabs.Add(prefab.Type, prefab);
-            }
-
-            if (GetLayout(LayoutType.MainLevelStyle0, out var layout))
-            {
-                mainLevel = layout;
-                mainLevel.gameObject.SetActive(false);
-            }
+            //if (TryInstantiateLayout(LayoutType.MainLevelStyle0, out var main)) mainLevel = main;
 
             foreach (var layoutData in savedMap.Layouts.Where(x => x.enable))
             {
-                loadedMap.Add(layoutData);
-            }
+                if(mainLevel && layoutData.type == LayoutType.MainLevelStyle0) continue;
 
-            gameController = GameControllerV2.Instance;
+                if(TryInstantiateLayout(layoutData.type, out var layout)) loadedMap.Add(layoutData);
+            }
         }
 
         private void Start()
         {
             var currentMapLayout = loadedMap[currentIndex];
             ActivateLayout(null, currentMapLayout.type, Vector3.zero, Quaternion.Euler(Vector3.zero));
+        }
+
+        private bool TryInstantiateLayout(LayoutType type, out LevelLayout layout)
+        {
+            if (type == LayoutType.MainLevelStyle0 && mainLevel)
+            {
+                layout = mainLevel;
+                return true;
+            }
+            
+            var prefab = layoutDataObject.LayoutPrefabs.FirstOrDefault(x => x != null && x.Type == type);
+
+            if(prefab)
+            {
+                layout = Instantiate(prefab);
+                layout.gameObject.SetActive(false);
+                layoutPool.Add(layout);
+                return true;
+            }
+
+            Debug.Log($"Level type {type} not found.");
+            layout = null;
+            return false;
         }
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -86,6 +98,8 @@ namespace Layouts
             }
         }
 
+
+
         private bool GetLayout(LayoutType type, out LevelLayout layout)
         {
             if (type == LayoutType.MainLevelStyle0 && mainLevel)
@@ -94,17 +108,9 @@ namespace Layouts
                 return true;
             }
 
-            layout = layoutPool.FirstOrDefault(x =>
-                x != null && x.Type == type && !x.gameObject.activeInHierarchy);
+            layout = layoutPool.FirstOrDefault(x => x != null && x.Type == type && !x.gameObject.activeInHierarchy);
 
             if (layout) return true;
-            
-            if (prefabs.TryGetValue(type, out var prefab))
-            {
-                layout = Instantiate(prefab);
-                layoutPool.Add(layout);
-                return true;
-            }
 
             Debug.Log($"Level type {type} not found.");
             return false;
@@ -144,12 +150,12 @@ namespace Layouts
 
         private void SetCurrentStyle(LayoutType type)
         {
-            CurrentLayoutStyle gameStyle;
+            string style;
             
             switch (type)
             {
                 case LayoutType.MainLevelStyle0:
-                    gameStyle = CurrentLayoutStyle.Style0;
+                    style = "style_0";
                     break;
                 case LayoutType.StraightHallwayStyle1:
                 case LayoutType.THallwayStyle1:
@@ -159,7 +165,7 @@ namespace Layouts
                 case LayoutType.FoodStackStyle1:
                 case LayoutType.PaintingRoomStyle1:
                 case LayoutType.PlayingRoomStyle1:
-                    gameStyle = CurrentLayoutStyle.Style1;
+                    style = "style_1";
                     break;
                 case LayoutType.StraightHallwayStyle2:
                 case LayoutType.THallwayStyle2:
@@ -168,7 +174,7 @@ namespace Layouts
                 case LayoutType.BedroomStyle2:
                 case LayoutType.TinyHouseVintageStyle2:
                 case LayoutType.PlayingRoomStyle2:
-                    gameStyle = CurrentLayoutStyle.Style2;
+                    style = "style_2";
                     break;
                 case LayoutType.StraightHallwayStyle3:
                 case LayoutType.THallwayStyle3:
@@ -176,20 +182,17 @@ namespace Layouts
                 case LayoutType.RightLHallwayStyle3:
                 case LayoutType.BathroomStyle3:
                 case LayoutType.ShedStyle3:
-                    gameStyle = CurrentLayoutStyle.Style3;
+                    style = "style_3";
                     break;
                 case LayoutType.StraightHallwayStyle4:
                 case LayoutType.THallwayStyle4:
                 case LayoutType.TinyCellStyle4:
-                    gameStyle = CurrentLayoutStyle.Style4;
+                    style = "style_4";
                     break;
                 default:
-                    gameStyle = CurrentLayoutStyle.Style0;
+                    style = "style_5";
                     break;
             }
-
-            gameController.SetCurrentStyle(gameStyle);
-
         }
     }
 }
