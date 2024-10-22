@@ -1,10 +1,7 @@
 {
     "name": "LayoutsAssembly",
     "rootNamespace": "",
-    "references": [
-        "GUID:d452ce00b7a1adf4c98fd194cd9dee54",
-        "GUID:14677ca89ed156947a8d191a1d35b327"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
