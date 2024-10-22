@@ -157,7 +157,7 @@ namespace Layouts
             switch (type)
             {
                 case LayoutType.MainLevelStyle0:
-                    style = "style_0";
+                    style = "style0";
                     break;
                 case LayoutType.StraightHallwayStyle1:
                 case LayoutType.THallwayStyle1:
@@ -167,7 +167,7 @@ namespace Layouts
                 case LayoutType.FoodStackStyle1:
                 case LayoutType.PaintingRoomStyle1:
                 case LayoutType.PlayingRoomStyle1:
-                    style = "style_1";
+                    style = "style1";
                     break;
                 case LayoutType.StraightHallwayStyle2:
                 case LayoutType.THallwayStyle2:
@@ -176,7 +176,7 @@ namespace Layouts
                 case LayoutType.BedroomStyle2:
                 case LayoutType.TinyHouseVintageStyle2:
                 case LayoutType.PlayingRoomStyle2:
-                    style = "style_2";
+                    style = "style2";
                     break;
                 case LayoutType.StraightHallwayStyle3:
                 case LayoutType.THallwayStyle3:
@@ -184,17 +184,19 @@ namespace Layouts
                 case LayoutType.RightLHallwayStyle3:
                 case LayoutType.BathroomStyle3:
                 case LayoutType.ShedStyle3:
-                    style = "style_3";
+                    style = "style3";
                     break;
                 case LayoutType.StraightHallwayStyle4:
                 case LayoutType.THallwayStyle4:
                 case LayoutType.TinyCellStyle4:
-                    style = "style_4";
+                    style = "style4";
                     break;
                 default:
-                    style = "style_5";
+                    style = "style5";
                     break;
             }
+
+            LayoutStyleChanged?.Invoke(this, style);
         }
     }
 }
