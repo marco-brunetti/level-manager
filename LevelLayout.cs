@@ -74,12 +74,12 @@ namespace Layouts
 
             for (int i = 0; i < doors.Count; i++)
             {
-                initialDoorRotations.Add(doors[i].transform.localEulerAngles);
+                if(doors[i]) initialDoorRotations.Add(doors[i].transform.localEulerAngles);
 
                 if (nextLayoutShapes == null || nextLayoutShapes.Count == 0 || i >= nextLayoutShapes.Count ||
                     (nextLayoutShapes[i] == LayoutType.None))
                 {
-                    doors[i].SetDoorState("locked");
+                    if(doors[i]) doors[i].SetDoorState("locked");
                     continue;
                 }
 
@@ -98,8 +98,11 @@ namespace Layouts
                         manager.StartCoroutine(manager.DeactivateLevelLayouts());
                     }
 
-                    doors[i].SetDoorState("closed");
-                    doors[i].SetDoorAction(action);
+                    if(doors[i]) 
+                    {
+                        doors[i].SetDoorState("closed");
+                        doors[i].SetDoorAction(action);
+                    }
                 }
             }
         }
@@ -110,7 +113,7 @@ namespace Layouts
             
             for (int i = 0; i < doors.Count; i++)
             {
-                doors[i].transform.localEulerAngles = initialDoorRotations[i];
+                if(doors[i]) doors[i].transform.localEulerAngles = initialDoorRotations[i];
             }
 
             initialDoorRotations.Clear();
